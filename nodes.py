@@ -101,13 +101,20 @@ class DownloadAndLoadLivePortraitModels:
         pbar = comfy.utils.ProgressBar(5)
 
         # NOTE: Download model
-        if not models_dir.exists():
-            logger.info(f"Downloading model to: {models_dir}")
+        if "liveportrait" not in folder_paths.folder_names_and_paths:
+            default_liveportrait_dir = os.path.join(folder_paths.models_dir, "liveportrait")
+            folder_paths.add_model_folder_path("liveportrait", default_liveportrait_dir)
+
+        download_path = folder_paths.get_folder_paths("liveportrait")[0]
+        model_path = Path(download_path)
+
+        if not model_path.exists():
+            logger.info(f"Downloading model to: {model_path}")
             from huggingface_hub import snapshot_download
 
             snapshot_download(
                 repo_id="Kijai/LivePortrait_safetensors",
-                local_dir=models_dir.as_posix(),
+                local_dir=model_path.as_posix(),
                 local_dir_use_symlinks=False,
             )
 
@@ -322,9 +329,9 @@ class LivePortraitProcess:
 
 
 NODE_CLASS_MAPPINGS = {
-    "DownloadAndLoadLivePortraitModels": DownloadAndLoadLivePortraitModels,
+    "AndLoadLivePortraitModels": AndLoadLivePortraitModels,
     "LivePortraitProcess": LivePortraitProcess,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "DownloadAndLoadLivePortraitModels": "(Down)Load LivePortraitModels",
+    "AndLoadLivePortraitModels": "(Down)Load LivePortraitModels",
 }
